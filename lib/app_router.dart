@@ -8,7 +8,7 @@ import 'package:novawallet/routes.dart';
 import 'package:novawallet/presentation/features/Activity/activity_detail_screen.dart';
 import 'package:novawallet/presentation/features/profile/profile_view.dart';
 import 'package:novawallet/presentation/features/novasave/create_goal_screen.dart';
-import 'package:novawallet/presentation/features/novasave/goal_detail_screen.dart';
+import 'package:novawallet/presentation/features/novasave/goal_detail_view.dart';
 import 'package:novawallet/presentation/features/novasave/nova_save_goal_view.dart';
 import 'package:novawallet/presentation/features/send/send_amount_view.dart';
 import 'package:novawallet/presentation/features/send/send_confirm_view.dart';
@@ -51,7 +51,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: ':goalId',
                 name: RouteNames.goal,
                 builder: (context, state) =>
-                    GoalDetailScreen(goalId: state.pathParameters['goalId']!),
+                    GoalDetailiew(goalId: state.pathParameters['goalId']!),
               ),
             ],
           ),

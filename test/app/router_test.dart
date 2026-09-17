@@ -7,6 +7,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:novawallet/app.dart';
 import 'package:novawallet/data/providers.dart';
+import 'package:novawallet/presentation/features/novasave/goal_detail_view.dart';
 import 'package:novawallet/app_router.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart';
 import 'package:novawallet/routes.dart';
@@ -141,7 +142,12 @@ void main() {
       container.read(appRouterProvider).go(Routes.goal('rent-2027'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Goal id: rent-2027'), findsOneWidget);
+      // The screen receives the id from the path but does not render it,
+      // so this asserts the route contract directly rather than via text.
+      expect(
+        tester.widget<GoalDetailiew>(find.byType(GoalDetailiew)).goalId,
+        'rent-2027',
+      );
       expect(find.byType(NavigationBar), findsNothing);
     },
   );

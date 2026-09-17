@@ -7,8 +7,8 @@ import 'package:novawallet/presentation/features/wallethome/widgets/card_button_
 import 'package:novawallet/presentation/shared/app_text.dart';
 import 'package:novawallet/core/theme/app_color.dart';
 
-class BalanceCardWidget extends StatefulWidget {
-  const BalanceCardWidget({
+class AppBalanceCardWidget extends StatefulWidget {
+  const AppBalanceCardWidget({
     super.key,
     required this.balance,
     this.onSend,
@@ -26,10 +26,10 @@ class BalanceCardWidget extends StatefulWidget {
   final bool showButton;
 
   @override
-  State<BalanceCardWidget> createState() => _BalanceCardWidgetState();
+  State<AppBalanceCardWidget> createState() => _AppBalanceCardWidgetState();
 }
 
-class _BalanceCardWidgetState extends State<BalanceCardWidget> {
+class _AppBalanceCardWidgetState extends State<AppBalanceCardWidget> {
   bool _hidden = false;
 
   @override
