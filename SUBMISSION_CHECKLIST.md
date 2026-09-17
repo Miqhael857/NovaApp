@@ -21,7 +21,7 @@ final push if you'd rather a reviewer didn't see it.
 
 | # | Deliverable | State |
 |---|---|---|
-| D1 | Git repo on GitHub | **Blocked** — 6 local commits, no remote (B2, B3) |
+| D1 | Git repo on GitHub | **Blocked** — committed locally, no remote (B2, B3) |
 | D2 | `README.md` | **Done** — architecture, state management, offline/sync design, trade-offs, assumptions, how to run |
 | D3 | `AI_USAGE.md` | **Done** — 3 real prompts, 3 cases where the model was wrong including one fabricated-evidence case |
 | D4 | Widget tests for Send **and** NovaSave contribution | **Partial** — Send flow covered to the Confirm step; contribution tests not written |
@@ -35,7 +35,7 @@ final push if you'd rather a reviewer didn't see it.
 |---|---|---|
 | F1 | Wallet home: ₦ from kobo, lazy list, pull-to-refresh | **Done** — `SliverList.builder`, `RefreshIndicator` wired to the sync engine |
 | F2 | Send Money, idempotency key per attempt | **Done** — key minted once entering Confirm, shown as the reference |
-| F3 | NovaSave: create a goal, contribute, progress | **Mostly done** — goals list with integer progress, goal detail, and a contribute sheet that queues through the same outbox. **Create-goal is still a placeholder.** Not yet verified on a device |
+| F3 | NovaSave: create a goal, contribute, progress | **Done** — goals list with integer progress, goal detail, a contribute sheet that queues through the same outbox, and a create-goal screen (name, target, date, with the monthly figure computed in integer kobo). Not yet verified on a device |
 | F4 | Offline: queued, shown as "Pending — will send when back online" | **Done** — Home strip, goal detail strip, result screen |
 | F5 | Sync on reconnect, exactly once | **Done** — outbox + idempotent receiver, 25 tests |
 
@@ -51,7 +51,7 @@ final push if you'd rather a reviewer didn't see it.
 
 ## 5. Known issues right now
 
-*As of commit `97c7371` — analyze clean, all 52 tests passing.*
+*Analyze clean, all 59 tests passing.*
 
 - **Profile route is commented out** in `app_router.dart` while the shell still renders a Profile destination. Tapping that tab would fail.
 - Home's balance is still a literal (`Kobo.fromNaira(20000)`), not read from the ledger.
@@ -78,7 +78,7 @@ airplane mode):
 1. B1/B2/B3 — get the repo up and the deck finalised. Nothing else matters if
    there is no submission.
 2. Restore the Profile route (~5 min) so the third tab cannot crash.
-3. Create-goal screen, then a contribution widget test (D4).
+3. A contribution widget test (D4).
 4. Integration test (D5) — last, because the README already documents its
    absence honestly.
 

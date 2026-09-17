@@ -11,6 +11,7 @@ import 'package:novawallet/data/providers.dart';
 import 'package:novawallet/presentation/shared/app_balance_card_widget.dart';
 import 'package:novawallet/presentation/shared/app_scaffold.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
+import 'package:novawallet/presentation/shared/utils/date_format.dart';
 import 'package:novawallet/routes.dart';
 
 /// The Save tab: what is saved in total, and every goal with its progress.
@@ -207,7 +208,7 @@ class GoalCard extends StatelessWidget {
                   Gap(4.w),
                   Expanded(
                     child: AppText(
-                      'Target: ${_formatDate(goal.targetDate)}',
+                      'Target: ${formatGoalDate(goal.targetDate)}',
                       fontSize: 12,
                       lineHeight: 16,
                       color: AppColors.textSecondary,
@@ -230,21 +231,4 @@ class GoalCard extends StatelessWidget {
     );
   }
 
-  static String _formatDate(DateTime at) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${at.day} ${months[at.month - 1]} ${at.year}';
-  }
 }

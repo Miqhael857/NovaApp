@@ -6,7 +6,7 @@ import 'package:novawallet/presentation/shared/app_navigation_layout.dart';
 
 import 'package:novawallet/routes.dart';
 import 'package:novawallet/presentation/features/activity/activity_detail_screen.dart';
-import 'package:novawallet/presentation/features/novasave/create_goal_screen.dart';
+import 'package:novawallet/presentation/features/novasave/create_goal_view.dart';
 import 'package:novawallet/presentation/features/novasave/goal_detail_view.dart';
 import 'package:novawallet/presentation/features/novasave/nova_save_goal_view.dart';
 import 'package:novawallet/presentation/features/send/send_amount_view.dart';
@@ -43,7 +43,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 parentNavigatorKey: rootNavigatorKey,
                 path: 'new',
                 name: RouteNames.newGoal,
-                builder: (context, state) => const CreateGoalScreen(),
+                builder: (context, state) => const CreateGoalView(),
               ),
               GoRoute(
                 parentNavigatorKey: rootNavigatorKey,
