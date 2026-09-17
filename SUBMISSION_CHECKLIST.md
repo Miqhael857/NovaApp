@@ -35,7 +35,7 @@ final push if you'd rather a reviewer didn't see it.
 |---|---|---|
 | F1 | Wallet home: ₦ from kobo, lazy list, pull-to-refresh | **Done** — `SliverList.builder`, `RefreshIndicator` wired to the sync engine |
 | F2 | Send Money, idempotency key per attempt | **Done** — key minted once entering Confirm, shown as the reference |
-| F3 | NovaSave: create a goal, contribute, progress | **In progress** — goal store + seeded goals + goals list + contribute sheet written and compiling; **create-goal is still a placeholder**; none of it verified on a device yet |
+| F3 | NovaSave: create a goal, contribute, progress | **Mostly done** — goals list with integer progress, goal detail, and a contribute sheet that queues through the same outbox. **Create-goal is still a placeholder.** Not yet verified on a device |
 | F4 | Offline: queued, shown as "Pending — will send when back online" | **Done** — Home strip, goal detail strip, result screen |
 | F5 | Sync on reconnect, exactly once | **Done** — outbox + idempotent receiver, 25 tests |
 
@@ -51,9 +51,9 @@ final push if you'd rather a reviewer didn't see it.
 
 ## 5. Known issues right now
 
-- **2 router tests failing** (`starts on Home and switches tabs`, `goal detail reads the goal id`). Both call `pumpAndSettle` on screens that now show a `CircularProgressIndicator` while the data layer loads — an indeterminate spinner never settles. Fix is a non-animating placeholder, not a test hack.
+*As of commit `97c7371` — analyze clean, all 52 tests passing.*
+
 - **Profile route is commented out** in `app_router.dart` while the shell still renders a Profile destination. Tapping that tab would fail.
-- **Uncommitted work**: `goal_store.dart`, `contribute_provider.dart`, both NovaSave views, plus your router/routes edits.
 - Home's balance is still a literal (`Kobo.fromNaira(20000)`), not read from the ledger.
 - `GoalDetailiew` is missing a "V" — cosmetic, but a reviewer reads class names.
 
@@ -75,10 +75,12 @@ airplane mode):
 
 ## 7. Order of work if time is short
 
-1. Fix the 2 failing tests and the Profile route (~15 min)
-2. Commit, then B1/B2/B3 — get the repo up and the deck finalised
-3. Create-goal screen, then a contribution widget test
-4. Integration test — last, because the README already documents its absence honestly
+1. B1/B2/B3 — get the repo up and the deck finalised. Nothing else matters if
+   there is no submission.
+2. Restore the Profile route (~5 min) so the third tab cannot crash.
+3. Create-goal screen, then a contribution widget test (D4).
+4. Integration test (D5) — last, because the README already documents its
+   absence honestly.
 
 The brief says it would *"rather see good judgment about what to prioritize than
 a rushed attempt at everything"*, so anything left undone should stay documented
