@@ -8,17 +8,6 @@ import 'package:novawallet/presentation/features/wallethome/model/transaction_mo
 import 'package:novawallet/presentation/features/wallethome/provider/transaction_provider.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
 
-/// Transactions, as a sliver so rows are built only as they scroll into view.
-///
-/// This is deliberately not a `ListView.builder` with `shrinkWrap: true` inside
-/// the page's scroll view: shrink-wrapping lays out every child to measure
-/// itself, so it would satisfy the letter of "use ListView.builder" while still
-/// building the whole history eagerly. A real wallet's history is unbounded and
-/// most NovaPay users are on low-end Android devices, which is why the brief
-/// makes laziness a hard constraint.
-///
-/// [limit] caps how many rows are shown: Home passes one to render a preview,
-/// and the full history screen passes none.
 class TransactionSliverList extends ConsumerWidget {
   const TransactionSliverList({super.key, this.limit});
 

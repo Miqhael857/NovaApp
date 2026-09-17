@@ -15,11 +15,6 @@ import 'package:novawallet/presentation/shared/app_text_field.dart';
 import 'package:novawallet/presentation/shared/utils/date_format.dart';
 import 'package:novawallet/routes.dart';
 
-/// Name, target amount, target date — then the goal exists.
-///
-/// No network call and no queue: a goal is the phone's own record of an
-/// intention, so this screen behaves the same offline as on. The money only
-/// moves when the user contributes, and that is what goes through the outbox.
 class CreateGoalView extends ConsumerStatefulWidget {
   const CreateGoalView({super.key});
 
@@ -169,14 +164,17 @@ class _CreateGoalViewState extends ConsumerState<CreateGoalView> {
                   label: 'Goal name',
                   error: _nameError,
                   // The counter sits opposite the error, as in the design.
-                  trailing: '${flow.trimmedName.length}/'
+                  trailing:
+                      '${flow.trimmedName.length}/'
                       '${CreateGoalFlow.maxNameLength}',
                   child: AppTextField(
                     controller: _name,
                     hintText: 'School fees',
                     maxLength: CreateGoalFlow.maxNameLength,
                     textInputAction: TextInputAction.next,
-                    onChanged: ref.read(createGoalFlowProvider.notifier).setName,
+                    onChanged: ref
+                        .read(createGoalFlowProvider.notifier)
+                        .setName,
                     borderSide: _nameError == null
                         ? null
                         : const BorderSide(color: AppColors.error, width: 2),

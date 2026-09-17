@@ -11,12 +11,6 @@ import 'package:novawallet/presentation/features/wallethome/transaction_view.dar
 import 'package:novawallet/presentation/shared/app_scaffold.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
 
-/// The full history, reached from "See all" on Home.
-///
-/// Home shows a preview; this shows everything, still built lazily so a long
-/// history costs nothing until it is scrolled. Anything still queued sits at
-/// the top with a Pending chip, which is the point of coming here after a send
-/// that went out while offline.
 class AllTransactionsView extends ConsumerWidget {
   const AllTransactionsView({super.key});
 

@@ -5,12 +5,6 @@ import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart'
     show kAvailableBalance;
 
-/// A contribution the user is composing.
-///
-/// Deliberately the same shape as the Send flow: an amount in whole kobo and an
-/// idempotency key minted once per attempt. A contribution goes through the
-/// same outbox and the same sync engine as a transfer, so it inherits the same
-/// guarantee — queued while offline, replayed once when the connection returns.
 class ContributeFlow {
   const ContributeFlow({this.goalId, this.amount, this.idempotencyKey});
 

@@ -17,4 +17,9 @@ enum SendStep {
   int get number => index + 1;
 }
 
-enum SendResult { sent, queued }
+/// How a transfer ended.
+///
+/// [rejected] is not a failure to *reach* NovaPay — it is NovaPay answering
+/// "no": over the daily limit, or not enough money. The sync engine marks such
+/// a row failed and never retries it, so it must never be shown as pending.
+enum SendResult { sent, queued, rejected }

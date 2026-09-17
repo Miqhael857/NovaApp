@@ -16,8 +16,6 @@ import 'package:novawallet/routes.dart';
 class WalletHomeScreen extends ConsumerWidget {
   const WalletHomeScreen({super.key});
 
-  /// Pull-to-refresh replays anything still queued. The sync engine is
-  /// single-flight, so pulling repeatedly cannot send the same action twice.
   Future<void> _refresh(WidgetRef ref) async {
     final services = await ref.read(novaPayServicesProvider.future);
     await services.sync.run();
@@ -30,8 +28,6 @@ class WalletHomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final offline = ref.watch(offlineOverrideProvider);
 
-    // Read from the ledger, not a literal: what the server holds, what is
-    // still queued, and what is therefore actually spendable.
     final balance = ref
         .watch(walletBalanceProvider)
         .maybeWhen(data: (value) => value, orElse: () => Kobo.zero);
@@ -90,10 +86,7 @@ class WalletHomeScreen extends ConsumerWidget {
                     ),
                     Gap(15.h),
 
-                    if (offline) ...[
-                      _OfflineBanner(),
-                      Gap(12.h),
-                    ],
+                    if (offline) ...[_OfflineBanner(), Gap(12.h)],
 
                     AppBalanceCardWidget(
                       text: 'NovaWallet balance',

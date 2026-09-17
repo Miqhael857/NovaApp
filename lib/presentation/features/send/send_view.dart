@@ -148,15 +148,15 @@ class SendView extends ConsumerWidget {
     await services.sync.run();
 
     final rows = await services.outbox.all();
-    final sent = rows.any(
-      (item) =>
-          item.idempotencyKey == key &&
-          item.status == AppDatabase.statusSucceeded,
-    );
+    final mine = rows.where((item) => item.idempotencyKey == key);
 
+    // Three outcomes, not two. A transfer the server REFUSED — over the daily
+    // limit, or more than the wallet holds — is marked failed and never
+    // retried, so showing it as pending would promise a send that will never
+    // happen.
     ref
         .read(sendResultProvider.notifier)
-        .setResult(sent ? SendResult.sent : SendResult.queued);
+        .setFromRow(mine.isEmpty ? null : mine.first);
 
     if (context.mounted) context.go(Routes.sendResult);
   }

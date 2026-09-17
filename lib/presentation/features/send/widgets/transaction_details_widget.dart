@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+
 import 'package:novawallet/core/date_utils.dart';
+import 'package:novawallet/core/enums.dart';
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/core/theme/app_color.dart';
+import 'package:novawallet/presentation/features/send/model/send_flow_model.dart';
 import 'package:novawallet/presentation/features/send/model/send_result_model.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
+
+/// Colour, icon and word for each outcome, in one place so the chip, the big
+/// icon and any future surface cannot drift apart.
+///
+/// Status is never carried by colour alone — every use pairs this icon with
+/// this word.
+({Color fg, Color bg, IconData icon, String label}) _styleFor(
+  SendResult result,
+) => switch (result) {
+  SendResult.sent => (
+    fg: AppColors.success,
+    bg: AppColors.successBg,
+    icon: Icons.check,
+    label: 'Sent',
+  ),
+  SendResult.queued => (
+    fg: AppColors.pending,
+    bg: AppColors.pendingBg,
+    icon: Icons.schedule,
+    label: 'Pending',
+  ),
+  SendResult.rejected => (
+    fg: AppColors.error,
+    bg: AppColors.errorBg,
+    icon: Icons.error_outline,
+    label: 'Not sent',
+  ),
+};
 
 class TransactionDetailsWidget extends StatelessWidget {
   const TransactionDetailsWidget({
@@ -44,12 +75,14 @@ class TransactionDetailsWidget extends StatelessWidget {
 }
 
 class StatusRow extends StatelessWidget {
-  const StatusRow({super.key, required this.sent});
+  const StatusRow({super.key, required this.result});
 
-  final bool sent;
+  final SendResult result;
 
   @override
   Widget build(BuildContext context) {
+    final style = _styleFor(result);
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 6.h),
       child: Row(
@@ -59,24 +92,20 @@ class StatusRow extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
             decoration: BoxDecoration(
-              color: sent ? AppColors.successBg : AppColors.pendingBg,
+              color: style.bg,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  sent ? Icons.check : Icons.schedule,
-                  size: 14.r,
-                  color: sent ? AppColors.success : AppColors.pending,
-                ),
+                Icon(style.icon, size: 14.r, color: style.fg),
                 Gap(4.w),
                 AppText(
-                  sent ? 'Sent' : 'Pending',
+                  style.label,
                   fontSize: 12,
                   lineHeight: 16,
                   fontWeight: FontWeight.w700,
-                  color: sent ? AppColors.success : AppColors.pending,
+                  color: style.fg,
                 ),
               ],
             ),
@@ -88,25 +117,20 @@ class StatusRow extends StatelessWidget {
 }
 
 class StatusIcon extends StatelessWidget {
-  const StatusIcon({super.key, required this.isSent});
+  const StatusIcon({super.key, required this.result});
 
-  final bool isSent;
+  final SendResult result;
 
   @override
   Widget build(BuildContext context) {
+    final style = _styleFor(result);
+
     return Center(
       child: Container(
         width: 72.r,
         height: 72.r,
-        decoration: BoxDecoration(
-          color: isSent ? AppColors.successBg : AppColors.pendingBg,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          isSent ? Icons.check : Icons.schedule,
-          size: 36.r,
-          color: isSent ? AppColors.success : AppColors.pending,
-        ),
+        decoration: BoxDecoration(color: style.bg, shape: BoxShape.circle),
+        child: Icon(style.icon, size: 36.r, color: style.fg),
       ),
     );
   }
@@ -115,19 +139,19 @@ class StatusIcon extends StatelessWidget {
 class TransferDetails extends StatelessWidget {
   const TransferDetails({
     super.key,
-    required this.isSent,
     required this.amount,
     required this.result,
     required this.flow,
   });
 
-  final bool isSent;
   final Kobo amount;
   final SendResultState result;
-  final dynamic flow;
+  final SendFlowModel flow;
 
   @override
   Widget build(BuildContext context) {
+    final outcome = result.result;
+
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -137,9 +161,12 @@ class TransferDetails extends StatelessWidget {
       ),
       child: Column(
         children: [
-          StatusRow(sent: isSent),
+          StatusRow(result: outcome),
 
-          if (!isSent) ...[
+          // On the success screen the recipient and amount are already in the
+          // sentence above; when the transfer has not gone through they are
+          // what the user needs to check.
+          if (outcome != SendResult.sent) ...[
             TransactionDetailsWidget(
               label: 'To',
               value: flow.accountName ?? '',
@@ -153,7 +180,11 @@ class TransferDetails extends StatelessWidget {
           ),
 
           TransactionDetailsWidget(
-            label: isSent ? 'Date' : 'Saved',
+            label: switch (outcome) {
+              SendResult.sent => 'Date',
+              SendResult.queued => 'Saved',
+              SendResult.rejected => 'Attempted',
+            },
             value: AppDateFormatter.format(result.createdAt),
           ),
         ],

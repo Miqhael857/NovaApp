@@ -119,10 +119,7 @@ class NovaSaveGoalView extends ConsumerWidget {
               ),
               data: (list) => Column(
                 children: [
-                  for (final goal in list) ...[
-                    GoalCard(goal: goal),
-                    Gap(12.h),
-                  ],
+                  for (final goal in list) ...[GoalCard(goal: goal), Gap(12.h)],
                 ],
               ),
             ),
@@ -230,5 +227,4 @@ class GoalCard extends StatelessWidget {
       ),
     );
   }
-
 }

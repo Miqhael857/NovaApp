@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:novawallet/core/enums.dart';
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/core/theme/app_color.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart';
@@ -32,7 +33,29 @@ class SendResultView extends ConsumerWidget {
     final flow = ref.watch(sendFlowModelProvider);
 
     final amount = flow.amount ?? Kobo.zero;
-    final isSent = result.isSent;
+    final outcome = result.result;
+
+    final title = switch (outcome) {
+      SendResult.sent => 'Transfer sent',
+      SendResult.queued => 'Pending — will send when back online',
+      SendResult.rejected => 'Not sent',
+    };
+
+    final body = switch (outcome) {
+      SendResult.sent =>
+        '${amount.format()} is on its way to ${flow.accountName ?? ''} '
+            'at ${flow.bank ?? ''}.',
+      SendResult.queued =>
+        "You're offline, so we've saved this transfer on your phone. It will "
+            'be sent once, automatically, when you reconnect — even if you '
+            'close the app.',
+      // NovaPay refused this one, and the sync engine will never retry it. The
+      // user gets the server's own reason and an explicit statement that the
+      // money did not move.
+      SendResult.rejected =>
+        '${result.reason ?? 'NovaPay could not complete this transfer.'} '
+            'Your balance was not debited.',
+    };
 
     return PopScope(
       canPop: false,
@@ -49,13 +72,11 @@ class SendResultView extends ConsumerWidget {
               child: ListView(
                 padding: EdgeInsets.fromLTRB(16.w, 32.h, 16.w, 16.h),
                 children: [
-                  StatusIcon(isSent: isSent),
+                  StatusIcon(result: outcome),
                   Gap(16.h),
 
                   AppText(
-                    isSent
-                        ? 'Transfer sent'
-                        : 'Pending — will send when back online',
+                    title,
                     fontSize: 24,
                     lineHeight: 32,
                     fontWeight: FontWeight.w800,
@@ -66,28 +87,21 @@ class SendResultView extends ConsumerWidget {
                   Gap(8.h),
 
                   AppText(
-                    isSent
-                        ? '${amount.format()} is on its way to '
-                              '${flow.accountName ?? ''} at '
-                              '${flow.bank ?? ''}.'
-                        : "You're offline, so we've saved this transfer "
-                              'on your phone. It will be sent once, '
-                              'automatically, when you reconnect — even if '
-                              'you close the app.',
+                    body,
                     color: AppColors.textSecondary,
                     textAlign: TextAlign.center,
                   ),
 
                   Gap(24.h),
 
-                  TransferDetails(
-                    isSent: isSent,
-                    amount: amount,
-                    result: result,
-                    flow: flow,
-                  ),
+                  TransferDetails(amount: amount, result: result, flow: flow),
 
-                  if (!isSent) ...[Gap(16.h), PendingMessage(amount: amount)],
+                  // Only a queued transfer holds money against the balance. A
+                  // rejected one released it, and a sent one has spent it.
+                  if (outcome == SendResult.queued) ...[
+                    Gap(16.h),
+                    PendingMessage(amount: amount),
+                  ],
                 ],
               ),
             ),
@@ -96,7 +110,7 @@ class SendResultView extends ConsumerWidget {
               padding: EdgeInsets.fromLTRB(16.w, 32.h, 16.w, 16.h),
 
               child: AppButton(
-                text: isSent ? 'Done' : 'Back to home',
+                text: outcome == SendResult.sent ? 'Done' : 'Back to home',
                 bgColor: AppColors.gold500,
                 tColor: AppColors.navy900,
                 fontWeight: FontWeight.w700,
