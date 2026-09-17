@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:novawallet/presentation/features/send/model/send_recipient_model.dart';
+import 'package:novawallet/presentation/features/send/model/send_result_model.dart';
 
 class SendRecipientNotifier extends Notifier<SendRecipientModel> {
   @override

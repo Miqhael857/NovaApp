@@ -4,12 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:novawallet/core/date_utils.dart';
-import 'package:novawallet/core/enums.dart';
 
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/core/theme/app_color.dart';
 import 'package:novawallet/presentation/features/send/provider/send_step_provider.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart';
+import 'package:novawallet/presentation/features/send/provider/send_result_provider.dart';
 import 'package:novawallet/presentation/features/send/widgets/transaction_details_widget.dart';
 import 'package:novawallet/presentation/shared/app_button.dart';
 import 'package:novawallet/presentation/shared/app_scaffold.dart';
@@ -17,18 +17,19 @@ import 'package:novawallet/presentation/shared/app_text.dart';
 import 'package:novawallet/routes.dart';
 
 class SendResultView extends ConsumerStatefulWidget {
-  const SendResultView({super.key, this.result = SendResult.sent});
-
-  final SendResult result;
+  const SendResultView({super.key});
 
   @override
   ConsumerState<SendResultView> createState() => _SendResultViewState();
 }
 
 class _SendResultViewState extends ConsumerState<SendResultView> {
-  final DateTime _at = DateTime.now();
+  /// Whether the transfer actually reached the server, as recorded when it was
+  /// submitted. Read from state rather than passed in, so the screen cannot
+  /// claim "Transfer sent" for something that is still sitting in the outbox.
+  bool get _sent => ref.watch(sendRecipientProvider).isSent;
 
-  bool get _sent => widget.result == SendResult.sent;
+  DateTime get _at => ref.watch(sendRecipientProvider).createdAt;
 
   void _goHome() {
     ref.read(sendFlowModelProvider.notifier).reset();
@@ -170,21 +171,6 @@ class _SendResultViewState extends ConsumerState<SendResultView> {
                     tColor: AppColors.navy900,
                     fontWeight: FontWeight.w700,
                     onTap: _goHome,
-                  ),
-                  Gap(8.h),
-                  AppButton(
-                    text: _sent ? 'Share receipt' : 'View activity',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            _sent
-                                ? 'Sharing a receipt is not part of this build.'
-                                : 'The activity screen is not built yet.',
-                          ),
-                        ),
-                      );
-                    },
                   ),
                 ],
               ),

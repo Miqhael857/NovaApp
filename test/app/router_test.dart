@@ -1,14 +1,33 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:novawallet/app.dart';
+import 'package:novawallet/data/providers.dart';
 import 'package:novawallet/app_router.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart';
 import 'package:novawallet/routes.dart';
 
+/// A fresh pair of database files per test, so nothing leaks between them.
+late Directory testDir;
+
+DataLayerConfig testConfig() => DataLayerConfig(
+  factory: databaseFactoryFfi,
+  clientPath: '${testDir.path}/client.db',
+  serverPath: '${testDir.path}/server.db',
+  latency: Duration.zero,
+);
+
 Future<void> pumpApp(WidgetTester tester) async {
-  await tester.pumpWidget(const ProviderScope(child: NovaWalletApp()));
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [dataLayerConfigProvider.overrideWith((ref) => testConfig())],
+      child: const NovaWalletApp(),
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -16,7 +35,9 @@ Future<void> pumpApp(WidgetTester tester) async {
 /// straight to a route instead of tapping through screens that are still
 /// being built.
 Future<ProviderContainer> pumpAppWithContainer(WidgetTester tester) async {
-  final container = ProviderContainer();
+  final container = ProviderContainer(
+    overrides: [dataLayerConfigProvider.overrideWith((ref) => testConfig())],
+  );
   addTearDown(container.dispose);
 
   await tester.pumpWidget(
@@ -35,6 +56,18 @@ Future<void> tapAndSettle(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  // There is no sqflite platform plugin in a widget test, so the data layer
+  // runs on the ffi factory against temp files.
+  setUpAll(sqfliteFfiInit);
+
+  setUp(() {
+    testDir = Directory.systemTemp.createTempSync('novapay_router_test');
+  });
+
+  tearDown(() {
+    if (testDir.existsSync()) testDir.deleteSync(recursive: true);
+  });
+
   testWidgets('starts on Home and switches tabs from the bottom bar', (
     tester,
   ) async {

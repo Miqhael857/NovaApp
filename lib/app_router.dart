@@ -12,7 +12,6 @@ import 'package:novawallet/presentation/features/novasave/goal_detail_screen.dar
 import 'package:novawallet/presentation/features/novasave/nova_save_goal_view.dart';
 import 'package:novawallet/presentation/features/send/send_amount_view.dart';
 import 'package:novawallet/presentation/features/send/send_confirm_view.dart';
-import 'package:novawallet/presentation/features/send/send_recipient_view.dart';
 import 'package:novawallet/presentation/features/send/send_result_view.dart';
 import 'package:novawallet/presentation/features/wallethome/wallet_home_view.dart';
 

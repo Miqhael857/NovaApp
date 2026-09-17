@@ -4,7 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:sqflite/sqflite.dart';
+
 import 'package:novawallet/core/enums.dart';
+import 'package:novawallet/data/local/app_database.dart';
+import 'package:novawallet/data/providers.dart';
+import 'package:novawallet/presentation/features/send/provider/send_result_provider.dart';
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/core/theme/app_color.dart';
 import 'package:novawallet/presentation/features/send/model/send_flow_model.dart';
@@ -100,6 +105,54 @@ class SendView extends ConsumerWidget {
     );
   }
 
+  /// Queues the transfer, then tries to send it.
+  ///
+  /// The order matters more than anything else on this screen: the outbox row
+  /// is written to disk **before** any network call. If the app dies between
+  /// the tap and the server answering, the row is still there and gets replayed
+  /// with the same idempotency key, so the transfer is never lost and never
+  /// sent twice.
+  Future<void> _submit(
+    BuildContext context,
+    WidgetRef ref,
+    SendFlowModel flow,
+  ) async {
+    final key = flow.idempotencyKey;
+    final amount = flow.amount;
+    if (key == null || amount == null) return;
+
+    final services = await ref.read(novaPayServicesProvider.future);
+
+    try {
+      await services.outbox.enqueue(
+        idempotencyKey: key,
+        type: AppDatabase.typeTransfer,
+        // These keys are the contract SyncEngine._send reads back.
+        payload: {
+          'accountNumber': flow.accountNumber,
+          'bankName': flow.bank,
+          'amountKobo': amount.value,
+          'narration': flow.narration.isEmpty ? null : flow.narration,
+        },
+      );
+    } on DatabaseException {
+      // The key is UNIQUE, so this means the row is already queued - a double
+      // tap, not a second transfer. Fall through and let sync handle it.
+    }
+
+    final report = await services.sync.run();
+
+    // Succeeded means the server answered and accepted. Anything else - no
+    // connection, or the pass stopped - leaves the row queued for later.
+    if (report.succeeded > 0) {
+      ref.read(sendRecipientProvider.notifier).markSent();
+    } else {
+      ref.read(sendRecipientProvider.notifier).reset();
+    }
+
+    if (context.mounted) context.go(Routes.sendResult);
+  }
+
   Widget _bodyFor(SendStep step) {
     return switch (step) {
       SendStep.recipient => const SendRecipientView(),
@@ -123,9 +176,7 @@ class SendView extends ConsumerWidget {
             bgColor: AppColors.gold500,
             tColor: AppColors.navy900,
             fontWeight: FontWeight.w700,
-            onTap: () {
-              context.go(Routes.sendResult);
-            },
+            onTap: () => _submit(context, ref, flow),
           ),
 
           Gap(4.h),
