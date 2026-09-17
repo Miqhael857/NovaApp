@@ -113,10 +113,28 @@ class WalletHomeScreen extends ConsumerWidget {
                           fontWeight: FontWeight.w700,
                           color: AppColors.navy700,
                         ),
-                        AppText(
-                          'See all',
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.navy700,
+                        Semantics(
+                          button: true,
+                          label: 'See all transactions',
+                          excludeSemantics: true,
+                          child: InkWell(
+                            onTap: () =>
+                                context.pushNamed(RouteNames.transactions),
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Padding(
+                              // 20 of text plus 14 either side clears the
+                              // 48dp minimum tap target.
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 14.h,
+                              ),
+                              child: AppText(
+                                'See all',
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.navy700,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -128,7 +146,8 @@ class WalletHomeScreen extends ConsumerWidget {
 
             SliverPadding(
               padding: EdgeInsets.fromLTRB(14.w, 0, 16.w, 24.h),
-              sliver: const TransactionSliverList(),
+              // Home is a preview; the rest is behind "See all".
+              sliver: const TransactionSliverList(limit: 6),
             ),
           ],
         ),

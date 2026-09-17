@@ -6,6 +6,9 @@ abstract final class Routes {
   static const save = '/save';
   static const profile = '/profile';
 
+  /// The full history, pushed above the tabs from Home's "See all".
+  static const transactions = '/transactions';
+
   // NovaSave pages shown above the tabs.
   static const newGoal = '/save/new';
   static String goal(String goalId) => '/save/$goalId';
@@ -28,6 +31,7 @@ abstract final class RouteNames {
   static const home = 'HomeView';
   static const save = 'GoalsView';
   static const profile = 'ProfileView';
+  static const transactions = 'AllTransactionsView';
 
   static const newGoal = 'CreateGoalView';
   static const goal = 'GoalDetailView';

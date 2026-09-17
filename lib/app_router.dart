@@ -12,6 +12,7 @@ import 'package:novawallet/presentation/features/novasave/nova_save_goal_view.da
 import 'package:novawallet/presentation/features/send/send_amount_view.dart';
 import 'package:novawallet/presentation/features/send/send_confirm_view.dart';
 import 'package:novawallet/presentation/features/send/send_result_view.dart';
+import 'package:novawallet/presentation/features/wallethome/all_transactions_view.dart';
 import 'package:novawallet/presentation/features/wallethome/wallet_home_view.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -95,6 +96,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.sendResult,
         name: RouteNames.sendResult,
         builder: (context, state) => const SendResultView(),
+      ),
+      GoRoute(
+        path: Routes.transactions,
+        name: RouteNames.transactions,
+        builder: (context, state) => const AllTransactionsView(),
       ),
       GoRoute(
         path: '/activity/:id',

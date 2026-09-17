@@ -11,6 +11,8 @@ import 'package:novawallet/presentation/features/novasave/goal_detail_view.dart'
 import 'package:novawallet/app_router.dart';
 import 'package:novawallet/presentation/features/send/provider/send_flow_provider.dart';
 import 'package:novawallet/routes.dart';
+import 'package:novawallet/presentation/features/wallethome/all_transactions_view.dart';
+import 'package:novawallet/presentation/features/wallethome/transaction_view.dart';
 
 /// A fresh pair of database files per test, so nothing leaks between them.
 late Directory testDir;
@@ -151,4 +153,38 @@ void main() {
       expect(find.byType(NavigationBar), findsNothing);
     },
   );
+
+  testWidgets('"See all" opens the full history above the tabs', (tester) async {
+    await pumpApp(tester);
+
+    // Home renders a preview, not the whole history.
+    expect(
+      tester.widget<TransactionSliverList>(find.byType(TransactionSliverList))
+          .limit,
+      6,
+    );
+
+    // The section header sits below the balance card, so it may be off-screen
+    // on the test surface even though it is reachable on a phone.
+    await tester.ensureVisible(find.text('See all'));
+    await tapAndSettle(tester, find.text('See all'));
+
+    expect(find.byType(AllTransactionsView), findsOneWidget);
+
+    // No cap on this screen: it is the full list.
+    expect(
+      tester
+          .widget<TransactionSliverList>(
+            find.descendant(
+              of: find.byType(AllTransactionsView),
+              matching: find.byType(TransactionSliverList),
+            ),
+          )
+          .limit,
+      isNull,
+    );
+
+    // Pushed on the root navigator, so the bottom bar is covered.
+    expect(find.byType(NavigationBar), findsNothing);
+  });
 }

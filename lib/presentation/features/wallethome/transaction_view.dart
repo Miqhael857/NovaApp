@@ -8,8 +8,7 @@ import 'package:novawallet/presentation/features/wallethome/model/transaction_mo
 import 'package:novawallet/presentation/features/wallethome/provider/transaction_provider.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
 
-/// Recent transactions, as a sliver so rows are built only as they scroll into
-/// view.
+/// Transactions, as a sliver so rows are built only as they scroll into view.
 ///
 /// This is deliberately not a `ListView.builder` with `shrinkWrap: true` inside
 /// the page's scroll view: shrink-wrapping lays out every child to measure
@@ -17,12 +16,21 @@ import 'package:novawallet/presentation/shared/app_text.dart';
 /// building the whole history eagerly. A real wallet's history is unbounded and
 /// most NovaPay users are on low-end Android devices, which is why the brief
 /// makes laziness a hard constraint.
+///
+/// [limit] caps how many rows are shown: Home passes one to render a preview,
+/// and the full history screen passes none.
 class TransactionSliverList extends ConsumerWidget {
-  const TransactionSliverList({super.key});
+  const TransactionSliverList({super.key, this.limit});
+
+  final int? limit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final transactions = ref.watch(transactionsProvider);
+    final all = ref.watch(transactionFeedProvider);
+    final cap = limit;
+    final transactions = cap == null || cap >= all.length
+        ? all
+        : all.take(cap).toList();
 
     return DecoratedSliver(
       decoration: BoxDecoration(
@@ -47,13 +55,21 @@ class _TransactionRow extends StatelessWidget {
   final TransactionModel transaction;
   final bool showDivider;
 
+  Color get _amountColor => switch (transaction.status) {
+    TransactionStatus.failed => AppColors.textMuted,
+    _ => transaction.isCredit ? AppColors.success : AppColors.navy900,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // One semantics node per row: a screen reader should read "Transfer to
-        // John, today 10:30 AM" as a single item, not as three fragments.
-        MergeSemantics(
+        // One node per row: a screen reader should read "Sent ₦15,000.00 to
+        // Chiamaka Obi, GTBank, today 21:14" as a single item, not as four
+        // fragments read in layout order.
+        Semantics(
+          label: transaction.semanticsLabel,
+          excludeSemantics: true,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             child: Row(
@@ -76,6 +92,8 @@ class _TransactionRow extends StatelessWidget {
                         transaction.title,
                         fontWeight: FontWeight.w600,
                         color: AppColors.navy900,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Gap(4.h),
                       AppText(
@@ -83,15 +101,27 @@ class _TransactionRow extends StatelessWidget {
                         fontSize: 12,
                         lineHeight: 16,
                         color: AppColors.textSecondary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
                 Gap(12.w),
-                Icon(
-                  transaction.trailingIcon,
-                  size: 18.r,
-                  color: AppColors.textMuted,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    AppText(
+                      transaction.formattedAmount,
+                      fontWeight: FontWeight.w700,
+                      color: _amountColor,
+                      tabular: true,
+                    ),
+                    if (transaction.status != TransactionStatus.completed) ...[
+                      Gap(4.h),
+                      _StatusChip(status: transaction.status),
+                    ],
+                  ],
                 ),
               ],
             ),
@@ -111,31 +141,55 @@ class _TransactionRow extends StatelessWidget {
   }
 }
 
-/// Box-shaped variant, for screens that are not built from slivers.
-///
-/// [TransactionSliverList] is the lazy one and is what Home uses for the real
-/// history. This builds its rows eagerly, so it is only appropriate for the
-/// short fixed previews the NovaSave screens show.
-class TransactionView extends ConsumerWidget {
-  const TransactionView({super.key});
+/// Status is never colour alone: the icon and the word carry it too, so it
+/// still reads on a monochrome screen and to someone who cannot distinguish
+/// amber from red.
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final TransactionStatus status;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final transactions = ref.watch(transactionsProvider);
+  Widget build(BuildContext context) {
+    final (label, icon, foreground, background) = switch (status) {
+      TransactionStatus.pending => (
+        'Pending',
+        Icons.schedule,
+        AppColors.pending,
+        AppColors.pendingBg,
+      ),
+      TransactionStatus.failed => (
+        'Failed',
+        Icons.error_outline,
+        AppColors.error,
+        AppColors.errorBg,
+      ),
+      TransactionStatus.completed => (
+        'Sent',
+        Icons.check_circle_outline,
+        AppColors.success,
+        AppColors.successBg,
+      ),
+    };
 
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(16.r),
+        color: background,
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Column(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          for (var i = 0; i < transactions.length; i++)
-            _TransactionRow(
-              transaction: transactions[i],
-              showDivider: i < transactions.length - 1,
-            ),
+          Icon(icon, size: 12.r, color: foreground),
+          Gap(4.w),
+          AppText(
+            label,
+            fontSize: 12,
+            lineHeight: 16,
+            fontWeight: FontWeight.w600,
+            color: foreground,
+          ),
         ],
       ),
     );
