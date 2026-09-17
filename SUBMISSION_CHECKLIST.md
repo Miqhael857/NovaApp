@@ -24,8 +24,8 @@ final push if you'd rather a reviewer didn't see it.
 | D1 | Git repo on GitHub | **Blocked** — committed locally, no remote (B2, B3) |
 | D2 | `README.md` | **Done** — architecture, state management, offline/sync design, trade-offs, assumptions, how to run |
 | D3 | `AI_USAGE.md` | **Done** — 3 real prompts, 3 cases where the model was wrong including one fabricated-evidence case |
-| D4 | Widget tests for Send **and** NovaSave contribution | **Partial** — Send flow covered to the Confirm step; contribution tests not written |
-| D5 | Integration test: offline queue then sync | **Not done** — needs `integration_test/` and a device |
+| D4 | Widget tests for Send **and** NovaSave contribution | **Done** — Send flow covered to the Confirm step; 5 contribution tests covering what the sheet shows, the integer progress maths, and every case where it refuses to submit |
+| D5 | Integration test: offline queue then sync | **Done** — `integration_test/offline_sync_test.dart`: queue offline → kill the app → relaunch on the same database files → reconnect → one ledger entry, one debit. **Passes on the iOS simulator** |
 | D6 | Runs with one command | **Done** — `flutter run`, no codegen, no backend |
 | D7 | PowerPoint with the repo link | **Done bar placeholders** (B1, B2) |
 
@@ -51,7 +51,7 @@ final push if you'd rather a reviewer didn't see it.
 
 ## 5. Known issues right now
 
-*Analyze clean, all 59 tests passing.*
+*Analyze clean, all 65 tests passing, plus the integration test passing on the iOS simulator.*
 
 - **Profile route is commented out** in `app_router.dart` while the shell still renders a Profile destination. Tapping that tab would fail.
 - Home's balance is still a literal (`Kobo.fromNaira(20000)`), not read from the ledger.
@@ -78,9 +78,8 @@ airplane mode):
 1. B1/B2/B3 — get the repo up and the deck finalised. Nothing else matters if
    there is no submission.
 2. Restore the Profile route (~5 min) so the third tab cannot crash.
-3. A contribution widget test (D4).
-4. Integration test (D5) — last, because the README already documents its
-   absence honestly.
+3. Rehearse the airplane-mode demo on the **Android** emulator — the iOS
+   simulator has no real airplane mode, so the live demo on the 22nd needs it.
 
 The brief says it would *"rather see good judgment about what to prioritize than
 a rushed attempt at everything"*, so anything left undone should stay documented

@@ -31,6 +31,20 @@ class _ContributeSheetWidgetState extends ConsumerState<ContributeSheetWidget> {
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    // The sheet is handed its goal, so it starts its own attempt rather than
+    // trusting whoever opened it to have done so. Relying on the caller meant
+    // a forgotten start() left the Add button disabled for ever, with nothing
+    // on screen to explain why.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(contributeFlowProvider.notifier).start(widget.goal.id);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

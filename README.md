@@ -6,14 +6,17 @@ Two journeys from the fictional NovaPay super-app: **sending money** from the
 wallet, and **NovaSave** goals. There is no backend — the app ships a fake one —
 and the interesting part is what happens when the network isn't there.
 
-**Flutter 3.38.5 · Dart 3.10.4 · 52 tests passing · `flutter analyze` clean**
+**Flutter 3.38.5 · Dart 3.10.4 · 65 tests passing · `flutter analyze` clean**
 
 ## Run it
 
 ```bash
 flutter pub get
 flutter run          # one command, no code generation, no backend to start
-flutter test         # 52 unit + widget tests
+flutter test         # 65 unit + widget tests
+
+# the offline path end to end, on a booted device or simulator
+flutter test integration_test/offline_sync_test.dart -d <device-id>
 ```
 
 The fake server seeds itself on first launch with ₦248,350.75.
@@ -143,14 +146,21 @@ calls `double.parse`, and goal progress is `value * 100 ~/ total` clamped to 0�
 Stated plainly, because the brief asks for judgment about priorities rather than a
 rushed attempt at everything:
 
-- **NovaSave create and contribute are not implemented.** The screens and the goal
-  model exist; the contribution path through the queue does not. The queue already
-  supports it (`AppDatabase.typeContribution`, and the API has `contributeToGoal`),
-  so it is wiring rather than design.
-- **No integration test yet.** The submit path — tap Confirm, write the row, run a
-  pass — needs real sqflite I/O, which a widget test's zone never completes (I
-  verified this directly). It belongs in `integration_test/` on a device, and the
-  widget test stops at the last thing it can honestly prove.
+- **Creating a goal is deliberately local-only.** It moves no money, so there is
+  nothing for the server to settle and nothing that could be sent twice; it writes
+  straight to the goals table and behaves identically offline. Contributions *do*
+  go through the outbox, with their own idempotency key, so they inherit the
+  transfer's exactly-once guarantee rather than reimplementing it.
+- **The integration test proves the path on a simulator, not on real hardware.**
+  `integration_test/offline_sync_test.dart` queues a transfer while offline, tears
+  the app down, relaunches against the same two database files, reconnects, and
+  asserts exactly one ledger entry and one debit. It passes on the iOS simulator.
+  It has not been run on a low-end Android handset, which is the environment this
+  brief actually cares about.
+- **Widget tests stop where sqflite does.** A widget test's zone never completes a
+  real database call, so the Send and contribute tests cover everything up to the
+  submitting tap and no further — which is why the path beyond it is proved on a
+  device instead of faked with a mock.
 - **`ShellRoute`, not `StatefulShellRoute`**, so the tabs share one navigation
   stack. Chosen for familiarity, knowing the cost.
 - Balance on Home is still a literal rather than read from the server ledger.
