@@ -93,8 +93,11 @@ void main() {
     );
     expect(selectedTab(), 1);
 
-    // The Profile destination is commented out in the shell for now. Restore
-    // the third tab here once it is back.
+    await tapAndSettle(
+      tester,
+      find.widgetWithText(NavigationDestination, 'Profile'),
+    );
+    expect(selectedTab(), 2);
   });
 
   testWidgets('send flow walks all three steps in one view and ends on a '

@@ -53,8 +53,9 @@ final push if you'd rather a reviewer didn't see it.
 
 *Analyze clean, all 65 tests passing, plus the integration test passing on the iOS simulator.*
 
-- **Profile route is commented out** in `app_router.dart` while the shell still renders a Profile destination. Tapping that tab would fail.
-- Home's balance is still a literal (`Kobo.fromNaira(20000)`), not read from the ledger.
+- Send validates against the constant `kAvailableBalance`, not the live available
+  balance Home now shows. The two can disagree; wiring Send to
+  `availableBalanceProvider` is the next change.
 - `GoalDetailiew` is missing a "V" — cosmetic, but a reviewer reads class names.
 
 ## 6. Verify before submitting

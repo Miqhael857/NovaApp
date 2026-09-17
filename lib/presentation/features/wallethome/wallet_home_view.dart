@@ -21,12 +21,22 @@ class WalletHomeScreen extends ConsumerWidget {
   Future<void> _refresh(WidgetRef ref) async {
     final services = await ref.read(novaPayServicesProvider.future);
     await services.sync.run();
-    ref.invalidate(outboxItemsProvider);
+    ref
+      ..invalidate(outboxItemsProvider)
+      ..invalidate(walletBalanceProvider);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final offline = ref.watch(offlineOverrideProvider);
+
+    // Read from the ledger, not a literal: what the server holds, what is
+    // still queued, and what is therefore actually spendable.
+    final balance = ref
+        .watch(walletBalanceProvider)
+        .maybeWhen(data: (value) => value, orElse: () => Kobo.zero);
+    final pending = ref.watch(pendingOutgoingProvider);
+    final available = ref.watch(availableBalanceProvider);
     final queued = ref
         .watch(outboxItemsProvider)
         .maybeWhen(
@@ -87,8 +97,11 @@ class WalletHomeScreen extends ConsumerWidget {
 
                     AppBalanceCardWidget(
                       text: 'NovaWallet balance',
-                      subtitle: 'Updated 22:04 · Pull down to refresh',
-                      balance: Kobo.fromNaira(20000),
+                      subtitle: pending.isZero
+                          ? 'Pull down to refresh'
+                          : 'Available ${available.format()} · '
+                                '${pending.format()} pending',
+                      balance: balance,
                       onSend: () => context.pushNamed(RouteNames.sendRecipient),
                       onSave: () => context.goNamed(RouteNames.save),
                     ),

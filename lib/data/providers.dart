@@ -185,3 +185,41 @@ final outboxItemsProvider = FutureProvider<List<OutboxItem>>((ref) async {
   final services = await ref.watch(novaPayServicesProvider.future);
   return services.outbox.all();
 });
+
+/// The wallet balance as the server holds it.
+///
+/// Read from the fake server's ledger rather than kept on the client, so a
+/// transfer that settles is reflected here and nowhere else has to be told.
+final walletBalanceProvider = FutureProvider<Kobo>((ref) async {
+  final services = await ref.watch(novaPayServicesProvider.future);
+  return FakeNovaPayApi.balanceOf(services.serverDb);
+});
+
+/// Money the user has already committed that has not reached the server yet.
+///
+/// Summed in kobo from the queue itself, so it cannot drift from what will
+/// actually be sent.
+final pendingOutgoingProvider = Provider<Kobo>((ref) {
+  final items = ref
+      .watch(outboxItemsProvider)
+      .maybeWhen(data: (list) => list, orElse: () => const <OutboxItem>[]);
+
+  var total = Kobo.zero;
+  for (final item in items.where((i) => i.needsSending)) {
+    total += Kobo((item.payload['amountKobo'] as num?)?.toInt() ?? 0);
+  }
+  return total;
+});
+
+/// Balance minus everything queued — what the user can actually spend.
+///
+/// Assumption 3 in the README: validating against the raw balance would let
+/// someone queue the same naira twice while offline and only discover the
+/// problem when the second one was rejected on reconnect.
+final availableBalanceProvider = Provider<Kobo>((ref) {
+  final balance = ref
+      .watch(walletBalanceProvider)
+      .maybeWhen(data: (value) => value, orElse: () => Kobo.zero);
+  final available = balance - ref.watch(pendingOutgoingProvider);
+  return available.isNegative ? Kobo.zero : available;
+});

@@ -39,11 +39,11 @@ class AppNavigationLayout extends StatelessWidget {
             selectedIcon: Icon(Icons.savings),
             label: 'Save',
           ),
-          // NavigationDestination(
-          //   icon: Icon(Icons.person_outline),
-          //   selectedIcon: Icon(Icons.person),
-          //   label: 'Profile',
-          // ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
       ),
     );

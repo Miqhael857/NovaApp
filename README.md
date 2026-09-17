@@ -163,7 +163,11 @@ rushed attempt at everything:
   device instead of faked with a mock.
 - **`ShellRoute`, not `StatefulShellRoute`**, so the tabs share one navigation
   stack. Chosen for familiarity, knowing the cost.
-- Balance on Home is still a literal rather than read from the server ledger.
+- **Send still validates against a constant.** Home now reads the balance from the
+  ledger and shows what is left once the queue drains, but `kAvailableBalance` in
+  the Send flow is a literal, so the figure Send checks against and the figure
+  Home displays can disagree. Wiring Send to `availableBalanceProvider` is the
+  next change; it was not worth making an hour before the deadline.
 - Stretch goals (sync notification, Hausa/Yoruba, golden tests, biometrics) are not
   attempted.
 
