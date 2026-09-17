@@ -1,0 +1,222 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Screens"
+    },
+    {
+      "id": "page-2",
+      "name": "Spec sheet & redlines"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "1 · Home — online",
+      "x": 0,
+      "y": 0,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "HomeOffline.dc.html",
+      "title": "2 · Home — offline, pending & failed",
+      "x": 440,
+      "y": 0,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "HomeLargeText.dc.html",
+      "title": "3 · Home — 200% text",
+      "x": 880,
+      "y": 0,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendRecipient.dc.html",
+      "title": "4 · Send — recipient",
+      "x": 0,
+      "y": 1000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendAmount.dc.html",
+      "title": "5 · Send — amount",
+      "x": 440,
+      "y": 1000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendConfirm.dc.html",
+      "title": "6 · Send — confirm",
+      "x": 880,
+      "y": 1000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendSent.dc.html",
+      "title": "7 · Send — sent",
+      "x": 1320,
+      "y": 1000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendQueued.dc.html",
+      "title": "8 · Send — queued offline",
+      "x": 1760,
+      "y": 1000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SaveGoals.dc.html",
+      "title": "9 · NovaSave — goals",
+      "x": 0,
+      "y": 2000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SaveCreate.dc.html",
+      "title": "10 · NovaSave — create goal",
+      "x": 440,
+      "y": 2000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SaveContribute.dc.html",
+      "title": "11 · NovaSave — contribute",
+      "x": 880,
+      "y": 2000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SaveGoalPending.dc.html",
+      "title": "12 · NovaSave — pending contribution",
+      "x": 1320,
+      "y": 2000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "ErrorAccount.dc.html",
+      "title": "13 · Error — invalid account number",
+      "x": 0,
+      "y": 3000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "ErrorAmount.dc.html",
+      "title": "14 · Error — amount over balance",
+      "x": 440,
+      "y": 3000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SyncFailed.dc.html",
+      "title": "15 · Failed sync — details",
+      "x": 880,
+      "y": 3000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "SendAmountLargeText.dc.html",
+      "title": "16 · Send amount — 200% text",
+      "x": 1320,
+      "y": 3000,
+      "w": 360,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "HomeAnnotated.dc.html",
+      "title": "Home — annotated redlines",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 980,
+      "page": "page-2"
+    },
+    {
+      "file": "Specs.dc.html",
+      "title": "Design spec — colour, type, components",
+      "x": 1160,
+      "y": 0,
+      "w": 1280,
+      "h": 3600,
+      "page": "page-2"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "row-1",
+      "x": -380,
+      "y": 0,
+      "w": 320,
+      "text": "Wallet home (F1, F4)\nThe balance comes from a whole-kobo integer. Offline: banner on top, available = balance − pending, and Pending / Failed chips with icon + word.",
+      "page": "page-1"
+    },
+    {
+      "id": "row-2",
+      "x": -380,
+      "y": 1000,
+      "w": 320,
+      "text": "Send Money (F2, F4)\nRecipient → Amount → Confirm. The reference on Confirm comes from the idempotency key made once per attempt. Sent and Queued are the two possible outcomes.",
+      "page": "page-1"
+    },
+    {
+      "id": "row-3",
+      "x": -380,
+      "y": 2000,
+      "w": 320,
+      "text": "NovaSave (F3, F4)\nProgress % uses whole-number maths (saved × 100 ÷ target). Pending contributions are drawn separately and not counted as saved.",
+      "page": "page-1"
+    },
+    {
+      "id": "row-4",
+      "x": -380,
+      "y": 3000,
+      "w": 320,
+      "text": "Errors & accessibility (C3)\nInline errors disable Continue. Failed syncs are never retried automatically. The 200% text screens show content reflowing instead of clipping.",
+      "page": "page-1"
+    },
+    {
+      "id": "spec-source",
+      "x": 0,
+      "y": -170,
+      "w": 520,
+      "text": "These values are the source of truth for the Flutter theme (lib/core/theme/app_theme.dart).",
+      "page": "page-2"
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
+}
