@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:novawallet/core/theme/app_color.dart';
 
 class AppText extends StatelessWidget {
@@ -42,8 +41,8 @@ class AppText extends StatelessWidget {
       overflow: overflow,
       semanticsLabel: semanticsLabel,
       style: TextStyle(
-        fontSize: fontSize.sp,
-        height: lineHeight.h / fontSize.sp,
+        fontSize: fontSize,
+        height: lineHeight / fontSize,
         fontWeight: fontWeight,
         letterSpacing: letterSpacing,
         color: color ?? AppColors.textPrimary,
