@@ -33,12 +33,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const WalletHomeScreen(),
           ),
           GoRoute(
-            parentNavigatorKey: rootNavigatorKey,
-            path: Routes.goaldetail,
-            name: RouteNames.goal,
-            builder: (context, state) =>
-                GoalDetailiew(goalId: state.pathParameters['goalId']!),
-
+            parentNavigatorKey: shellKey,
+            path: Routes.save,
+            name: RouteNames.save,
+            builder: (context, state) => const NovaSaveGoalView(),
             routes: [
               // 'new' is listed before ':goalId' so it is not read as a goal id.
               GoRoute(
@@ -49,9 +47,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 parentNavigatorKey: rootNavigatorKey,
-                path: Routes.save,
-                name: RouteNames.save,
-                builder: (context, state) => const NovaSaveGoalView(),
+                path: ':goalId',
+                name: RouteNames.goal,
+                builder: (context, state) =>
+                    GoalDetailiew(goalId: state.pathParameters['goalId']!),
               ),
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/data/local/app_database.dart';
+import 'package:novawallet/data/local/goal_store.dart';
 import 'package:novawallet/data/local/outbox_store.dart';
 import 'package:novawallet/data/remote/fake_novapay_api.dart';
 import 'package:novawallet/data/sync/sync_engine.dart';
@@ -64,6 +65,7 @@ class NovaPayServices {
     required this.clientDb,
     required this.serverDb,
     required this.outbox,
+    required this.goals,
     required this.api,
     required this.sync,
   });
@@ -71,6 +73,7 @@ class NovaPayServices {
   final Database clientDb;
   final Database serverDb;
   final OutboxStore outbox;
+  final GoalStore goals;
   final FakeNovaPayApi api;
   final SyncEngine sync;
 }
@@ -117,6 +120,10 @@ final novaPayServicesProvider = FutureProvider<NovaPayServices>((ref) async {
     latency: config.latency,
   );
   final outbox = OutboxStore(clientDb);
+
+  // The goals the design shows, so a first run has something real to display.
+  final goals = GoalStore(clientDb);
+  await goals.seedIfEmpty();
   final sync = SyncEngine(outbox: outbox, api: api);
 
   // Replay the queue when the connection comes back. SyncEngine is
@@ -154,9 +161,22 @@ final novaPayServicesProvider = FutureProvider<NovaPayServices>((ref) async {
     clientDb: clientDb,
     serverDb: serverDb,
     outbox: outbox,
+    goals: goals,
     api: api,
     sync: sync,
   );
+});
+
+/// Every NovaSave goal, with what the phone believes is saved so far.
+final goalsProvider = FutureProvider<List<Goal>>((ref) async {
+  final services = await ref.watch(novaPayServicesProvider.future);
+  return services.goals.all();
+});
+
+/// Total saved across every goal, summed in kobo.
+final totalSavedProvider = FutureProvider<Kobo>((ref) async {
+  final services = await ref.watch(novaPayServicesProvider.future);
+  return services.goals.totalSaved();
 });
 
 /// Everything currently in the outbox, newest first. Home reads this to show

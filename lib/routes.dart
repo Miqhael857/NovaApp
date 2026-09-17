@@ -7,7 +7,6 @@ abstract final class Routes {
   static const profile = '/profile';
 
   // NovaSave pages shown above the tabs.
-  static const goaldetail = '/detail';
   static const newGoal = '/save/new';
   static String goal(String goalId) => '/save/$goalId';
 

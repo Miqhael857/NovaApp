@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:novawallet/presentation/widgets/placeholder_screen.dart';
+import 'package:novawallet/presentation/shared/app_scaffold.dart';
 
 class ActivityDetailScreen extends StatelessWidget {
   const ActivityDetailScreen({super.key, required this.id});
@@ -9,9 +8,6 @@ class ActivityDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PlaceholderScreen(
-      title: 'Transfer details',
-      description: 'Status, reference and failure reason for $id go here.',
-    );
+    return AppScaffold(body: Column(children: []));
   }
 }
