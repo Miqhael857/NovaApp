@@ -1,22 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:novawallet/core/enums.dart';
 import 'package:novawallet/presentation/features/send/model/send_result_model.dart';
 
-class SendRecipientNotifier extends Notifier<SendRecipientModel> {
+class SendResultNotifier extends Notifier<SendResultState> {
   @override
-  SendRecipientModel build() {
-    return SendRecipientModel(createdAt: DateTime.now());
+  SendResultState build() {
+    return SendResultState(result: SendResult.sent, createdAt: DateTime.now());
   }
 
-  void markSent() {
-    state = state.copyWith(isSent: true, createdAt: DateTime.now());
+  void setResult(SendResult result) {
+    state = SendResultState(result: result, createdAt: DateTime.now());
   }
 
   void reset() {
-    state = SendRecipientModel(createdAt: DateTime.now());
+    state = SendResultState(result: SendResult.sent, createdAt: DateTime.now());
+  }
+
+  void markSent() {
+    setResult(SendResult.sent);
   }
 }
 
-final sendRecipientProvider =
-    NotifierProvider<SendRecipientNotifier, SendRecipientModel>(
-      SendRecipientNotifier.new,
+final sendResultProvider =
+    NotifierProvider<SendResultNotifier, SendResultState>(
+      SendResultNotifier.new,
     );

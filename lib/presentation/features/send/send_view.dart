@@ -136,19 +136,27 @@ class SendView extends ConsumerWidget {
         },
       );
     } on DatabaseException {
-      // The key is UNIQUE, so this means the row is already queued - a double
-      // tap, not a second transfer. Fall through and let sync handle it.
+      // The idempotency key is UNIQUE, so this means the row is already
+      // queued: a double tap, not a second transfer. Let sync handle it.
     }
 
-    final report = await services.sync.run();
+    // Run a pass, then ask the ROW what happened instead of trusting this
+    // pass's report. SyncEngine is single-flight: if a pass was already running
+    // when we enqueued, run() hands back that pass, which read the queue before
+    // our row existed and would report nothing sent - so a transfer that
+    // actually went through would be shown as still pending.
+    await services.sync.run();
 
-    // Succeeded means the server answered and accepted. Anything else - no
-    // connection, or the pass stopped - leaves the row queued for later.
-    if (report.succeeded > 0) {
-      ref.read(sendRecipientProvider.notifier).markSent();
-    } else {
-      ref.read(sendRecipientProvider.notifier).reset();
-    }
+    final rows = await services.outbox.all();
+    final sent = rows.any(
+      (item) =>
+          item.idempotencyKey == key &&
+          item.status == AppDatabase.statusSucceeded,
+    );
+
+    ref
+        .read(sendResultProvider.notifier)
+        .setResult(sent ? SendResult.sent : SendResult.queued);
 
     if (context.mounted) context.go(Routes.sendResult);
   }

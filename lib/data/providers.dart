@@ -139,10 +139,12 @@ final novaPayServicesProvider = FutureProvider<NovaPayServices>((ref) async {
     if (previous == true && next == false) unawaited(sync.run());
   });
 
-  ref.onDispose(() async {
-    await subscription?.cancel();
-    await clientDb.close();
-    await serverDb.close();
+  ref.onDispose(() {
+    // Not awaited: a sync pass may still be in flight, and blocking disposal on
+    // a database close can wedge the whole container.
+    unawaited(subscription?.cancel() ?? Future<void>.value());
+    unawaited(clientDb.close().catchError((_) {}));
+    unawaited(serverDb.close().catchError((_) {}));
   });
 
   // Anything left over from a previous run goes out now.

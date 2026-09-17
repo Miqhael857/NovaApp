@@ -1,13 +1,10 @@
-class SendRecipientModel {
-  final bool isSent;
+import 'package:novawallet/core/enums.dart';
+
+class SendResultState {
+  const SendResultState({required this.result, required this.createdAt});
+
+  final SendResult result;
   final DateTime createdAt;
 
-  const SendRecipientModel({this.isSent = false, required this.createdAt});
-
-  SendRecipientModel copyWith({bool? isSent, DateTime? createdAt}) {
-    return SendRecipientModel(
-      isSent: isSent ?? this.isSent,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
+  bool get isSent => result == SendResult.sent;
 }

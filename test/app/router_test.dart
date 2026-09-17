@@ -15,7 +15,10 @@ import 'package:novawallet/routes.dart';
 late Directory testDir;
 
 DataLayerConfig testConfig() => DataLayerConfig(
-  factory: databaseFactoryFfi,
+  // No-isolate: a widget test zone never services the background
+  // isolate the default ffi factory uses, so its database calls never
+  // complete and the screen never advances.
+  factory: databaseFactoryFfiNoIsolate,
   clientPath: '${testDir.path}/client.db',
   serverPath: '${testDir.path}/server.db',
   latency: Duration.zero,
@@ -120,7 +123,13 @@ void main() {
     await tapAndSettle(tester, find.text('Continue'));
     expect(container.read(sendFlowModelProvider).reference, reference);
 
-    await tapAndSettle(tester, find.text('Confirm and send \u20a65,000.00'));
+    // Confirm opens sqflite and runs a sync pass - real I/O, which
+    // pumpAndSettle does not wait for. runAsync gives it a real event loop.
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Confirm and send \u20a65,000.00'));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    await tester.pumpAndSettle();
     expect(find.text('Transfer sent'), findsOneWidget);
     expect(find.byType(BackButton), findsNothing);
 

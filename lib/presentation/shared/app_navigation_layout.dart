@@ -17,7 +17,7 @@ class AppNavigationLayout extends StatelessWidget {
   int _selectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
     if (location.startsWith(Routes.save)) return 1;
-    // if (location.startsWith(Routes.profile)) return 2;
+    if (location.startsWith(Routes.profile)) return 2;
     return 0;
   }
 
@@ -39,11 +39,11 @@ class AppNavigationLayout extends StatelessWidget {
             selectedIcon: Icon(Icons.savings),
             label: 'Save',
           ),
-          // NavigationDestination(
-          //   icon: Icon(Icons.person_outline),
-          //   selectedIcon: Icon(Icons.person),
-          //   label: 'Profile',
-          // ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
       ),
     );
