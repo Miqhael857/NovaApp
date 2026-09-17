@@ -5,8 +5,7 @@ import 'package:novawallet/presentation/features/send/send_view.dart';
 import 'package:novawallet/presentation/shared/app_navigation_layout.dart';
 
 import 'package:novawallet/routes.dart';
-import 'package:novawallet/presentation/features/Activity/activity_detail_screen.dart';
-import 'package:novawallet/presentation/features/profile/profile_view.dart';
+import 'package:novawallet/presentation/features/activity/activity_detail_screen.dart';
 import 'package:novawallet/presentation/features/novasave/create_goal_screen.dart';
 import 'package:novawallet/presentation/features/novasave/goal_detail_view.dart';
 import 'package:novawallet/presentation/features/novasave/nova_save_goal_view.dart';
@@ -34,10 +33,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const WalletHomeScreen(),
           ),
           GoRoute(
-            parentNavigatorKey: shellKey,
-            path: Routes.save,
-            name: RouteNames.save,
-            builder: (context, state) => const NovaSaveGoalView(),
+            parentNavigatorKey: rootNavigatorKey,
+            path: Routes.goaldetail,
+            name: RouteNames.goal,
+            builder: (context, state) =>
+                GoalDetailiew(goalId: state.pathParameters['goalId']!),
+
             routes: [
               // 'new' is listed before ':goalId' so it is not read as a goal id.
               GoRoute(
@@ -48,19 +49,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 parentNavigatorKey: rootNavigatorKey,
-                path: ':goalId',
-                name: RouteNames.goal,
-                builder: (context, state) =>
-                    GoalDetailiew(goalId: state.pathParameters['goalId']!),
+                path: Routes.save,
+                name: RouteNames.save,
+                builder: (context, state) => const NovaSaveGoalView(),
               ),
             ],
           ),
-          GoRoute(
-            parentNavigatorKey: shellKey,
-            path: Routes.profile,
-            name: RouteNames.profile,
-            builder: (context, state) => const ProfileView(),
-          ),
+          // GoRoute(
+          //   parentNavigatorKey: shellKey,
+          //   path: Routes.profile,
+          //   name: RouteNames.profile,
+          //   builder: (context, state) => const ProfileScreen(),
+          // ),
         ],
       ),
 

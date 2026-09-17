@@ -3,11 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:novawallet/core/money/kobo.dart';
 import 'package:novawallet/core/theme/app_color.dart' show AppColors;
+import 'package:novawallet/presentation/features/wallethome/transaction_view.dart';
 import 'package:novawallet/presentation/shared/app_balance_card_widget.dart';
 import 'package:novawallet/presentation/shared/app_scaffold.dart';
 import 'package:novawallet/presentation/shared/app_text.dart';
-
-import 'package:novawallet/presentation/features/wallethome/transaction_view.dart';
 
 class GoalDetailiew extends StatelessWidget {
   const GoalDetailiew({super.key, required this.goalId});
